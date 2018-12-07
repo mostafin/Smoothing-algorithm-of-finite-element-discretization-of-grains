@@ -31,14 +31,17 @@
 #include "vtkAutoInit.h" 
 #include<vtkInteractorStyleTrackballCamera.h>
 #include "dataExport.h"
-//VTK_MODULE_INIT(vtkRenderingOpenGL);
+#include "objparse.h"
+#include <vtkCellArray.h>
+#include <vtkPolygon.h>
+
 
 using namespace std;
 
 class subdividing
 {
 public:
-	subdividing(vector<vertex*> v,string path);
+	subdividing(vector<vertex*> v,string path , objparse *obj);
 
 	vtkSmartPointer<vtkPoints> parse(vector<vertex*> v);
 	vtkSmartPointer<vtkSurfaceReconstructionFilter> surfReconstruction();
@@ -53,13 +56,12 @@ public:
 	vtkSmartPointer<vtkPolyData> polydata;
 	vtkSmartPointer<vtkSurfaceReconstructionFilter> surf;
 	vtkSmartPointer<vtkRenderWindowInteractor> renderWindowInteractor;
-	//vizualization *viz;
 	vtkSmartPointer<vtkPolyDataMapper> map;
 	vtkSmartPointer<vtkInteractorStyleTrackballCamera> style;
 	dataExport *data;
 	string path;
+	objparse *obj;
 	vector<vertex*> v;
-
 	int NumberOfPointsToExtract;
 };
 

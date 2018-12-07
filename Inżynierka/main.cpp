@@ -21,12 +21,17 @@ int main() {
 
 
 	vector<vertex*> Vertexes;
+	string path = "sphere_200_r40_0-5um.inp";
+	//string path = "sphere_50_r10_2um.inp";
+	//string path = "duzy.inp";
 	//string path = "sphere_25_r5_4um.inp";
-	string path = "duzy.inp";
+	//string path = "sphere_250_r25_1um.inp";
+	//string path = "APTv3-300kVersion2_out.inp";
+	//string path = "50x50x50 31% 56 new grains periodic_lm.inp";
+	//string path = "sphere_100_r20_1um.inp";
 	ifstream objFile("Data/"+path);
 	objparse *obj = new objparse(objFile, Vertexes);
-	//cout << "punkt pierwszy : " << Vertexes[0]->loc.x() << "\t" << Vertexes[0]->loc.y() << "\t" << Vertexes[0]->loc.z() << endl;
-	subdividing *subd = new subdividing(Vertexes,path);
+	subdividing *subd = new subdividing(Vertexes,path, obj);
 
 	return  EXIT_SUCCESS;
 }

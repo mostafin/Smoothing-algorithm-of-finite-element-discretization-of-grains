@@ -1,5 +1,6 @@
 #include "objparse.h"
 #include<ctime>
+#include <math.h>
 using namespace std;
 
 
@@ -52,11 +53,13 @@ objparse::objparse(istream& objfile, vector<vertex*> &Vertexes)
 	}
 	findVertex(this->Elset, this->Elset_v);
 	checkVertexes(this->Elset_v);
+	//createFaces();
 
 	time = (clock() - time) / 1000;
 	cout << "Czas parsowania: " <<" m: " << (int)(time / 60.0) << " s: " << time  % 60 << endl;
 
 	Vertexes = verteces;
+	//Vertexes = surface_verteces;
 }
 
 
@@ -72,6 +75,7 @@ void objparse::parseNode(string line)
 	sscanf_s(line.c_str(), "%f,	%f,	%f,	%f", &id, &x, &y, &z);
 	v->loc = Vector3f(x, y, z);
 	v->id = id;
+	v->distance = sqrt(x*x + y * y + z * z);
 
 	this->temp_verteces.push_back(v);
 	//verteces.push_back(v);
@@ -83,15 +87,6 @@ void objparse::parseElement(string line)
 	int tab[4];
 	sscanf_s(line.c_str(), "%d,\t%d,\t%d,\t%d,\t%d", &id, &tab[0], &tab[1], &tab[2], &tab[3]);
 
-	//float max = tab[0];
-	//int  j = 0;
-	//for (int i = 1; i < 4; i++)
-	//{
-	//	if (tab[i] > max) {
-	//		max = tab[i];
-	//		j = i;
-	//	}
-	//}
 	struct objface f;
 	f.id = objfaces.size() + 1;
 
@@ -144,33 +139,6 @@ void objparse::findVertex(list<vector<int>> elset, list<vector<vertex*>>& Elset_
 
 void objparse::checkVertexes(list<vector<vertex*>> Elset_v)
 {
-	//int index = 0;
-	//int i = 0;
-	//int smallest;
-	//for (list<vector<vertex*>>::iterator iter_v = Elset_v.begin(); iter_v != Elset_v.end(); iter_v++) {
-	//	vector<vertex*> v = *iter_v;
-	//	if (i == 0)
-	//		smallest = v.size();
-	//	else if (v.size() < smallest)
-	//	{
-	//		smallest = v.size();
-	//		index = i;
-	//	}
-	//	i++;
-	//}
-
-	//i = 0;
-	//for (list<vector<vertex*>>::iterator iter_v = Elset_v.begin(); iter_v != Elset_v.end(); iter_v++) {
-	//	vector<vertex*> v = *iter_v;
-	//	if (i == index)
-	//	{
-	//		vector<vertex*> v = *iter_v;
-	//		for (auto & elem : v) {
-	//			this->verteces.push_back(elem);
-	//		}
-	//	}
-	//	i++;
-	//}
 
 	for (auto & elset : Elset_v) {
 
@@ -181,35 +149,63 @@ void objparse::checkVertexes(list<vector<vertex*>> Elset_v)
 					if (vert->id == elset_elem->id)
 					{
 						vert->cout = vert->cout + 1; 
-						//cout << "Inc v : " << vert->id << endl;
 						break;
 					}
 				}
 			}
 		}
 	}
-
 	for (auto & vert : temp_verteces) {
 		if (vert->cout >= 2)
 		{
 			this->verteces.push_back(vert);
 		}
 	}
-	/*bool exist;
-	bool go_back = false;
-	for (auto & list_el : Elset_v) {
-		for (int i = 0; i < verteces.size(); i++) {
 
+}
+
+void objparse::createFaces()
+{
+	vector<unsigned int> tab;
+	for (auto & obj : objfaces) {
+		int i = 0;
+		for (int j = 0; j < obj.vids.size(); j++) {
+			for (auto & vert : verteces) {
+				if (obj.vids[j] == vert->id) {
+					tab.push_back(vert->id);
+					i++;
+				}
+			}
+		}
+		if ( i == 3) {
+			struct objface f;
+			f.id = inner_objfaces.size() + 1;
+			tab = { inner_objfaces.size() + 1, inner_objfaces.size() + 2, inner_objfaces.size() + 3 };
+			f.vids = tab;
+			inner_objfaces.push_back(f);
+		}
+		tab.clear();
+	}
+
+	bool exist = false;
+	for (auto & obj : inner_objfaces) {
+		for (int i = 0; i < obj.vids.size(); i++) {
 			exist = false;
-			for (auto & elem : list_el) {
-				if (verteces[i] == elem)
+			for (auto & vert : surface_verteces) {
+				if (vert->id == obj.vids[i])
 					exist = true;
 			}
 			if (exist == false) {
-				this->verteces.erase(verteces.begin() + i);
-				i--;
+				for (auto & vert : temp_verteces) {
+					if (vert->id == obj.vids[i]) {
+						vertex *v = new vertex();
+						v->id = vert->id;
+						v->loc = vert->loc;
+						surface_verteces.push_back(v);
+					}
+				}
 			}
 		}
-	}*/
+	}
 }
 

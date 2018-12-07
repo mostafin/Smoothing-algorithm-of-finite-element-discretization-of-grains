@@ -1,14 +1,16 @@
 
 #include "subdividing.h"
+#include <iomanip>
 
-int subdividing::numberOfSubdivisions = 2;
-subdividing::subdividing(vector<vertex*> v, string path)
+int subdividing::numberOfSubdivisions = 0;
+subdividing::subdividing(vector<vertex*> v, string path , objparse *obj)
 {	
 	this->path = path;
 	this->v = v;
+	this->obj = obj;
 	this->renderWindow = vtkSmartPointer<vtkRenderWindow>::New();
 	renderWindow->SetSize(600 * 2, 600); //(width, height)
-
+	cout << "Found vertexes : " << v.size() << endl;
 	parse(v);
 	surfReconstruction();
 	this->renderWindowInteractor = vtkSmartPointer<vtkRenderWindowInteractor>::New();
@@ -35,10 +37,11 @@ vtkSmartPointer<vtkSurfaceReconstructionFilter> subdividing::surfReconstruction(
 {
 	this->polydata = vtkSmartPointer<vtkPolyData>::New();
 	polydata->SetPoints(this->input);
+	
 
-
-	// Construct the surface and create isosurface.	
+	//Construct the surface and create isosurface.	
 	this->surf = vtkSmartPointer<vtkSurfaceReconstructionFilter>::New();
+	surf->SetNeighborhoodSize(20);
 #if VTK_MAJOR_VERSION <= 5
 	surf->SetInput(this->polydata);
 #else
@@ -46,7 +49,6 @@ vtkSmartPointer<vtkSurfaceReconstructionFilter> subdividing::surfReconstruction(
 #endif
 
 	
-
 	vtkSmartPointer<vtkContourFilter> cf =
 		vtkSmartPointer<vtkContourFilter>::New();
 	cf->SetInputConnection(surf->GetOutputPort());
@@ -66,21 +68,16 @@ vtkSmartPointer<vtkSurfaceReconstructionFilter> subdividing::surfReconstruction(
 	this->map->ScalarVisibilityOff();
 
 
-	// Subdivision filters only work on triangles
+	 //Subdivision filters only work on triangles
 	vtkSmartPointer<vtkTriangleFilter> triangles =
 		vtkSmartPointer<vtkTriangleFilter>::New();
 	triangles->SetInputConnection(reverse->GetOutputPort());
 	triangles->Update();
 	this->originalMesh = triangles->GetOutput();
 
-	
-	/*for (vtkIdType i = 0; i < originalMesh->GetNumberOfPoints(); i++)
-	{
-		double pointCoordinates[3];
-		originalMesh->GetPoint(i, pointCoordinates);
-		cout << "Point " << i << " : (" << pointCoordinates[0] << " " << pointCoordinates[1] << " " << pointCoordinates[2] << ")" << endl;
-	}*/
+
 	this->NumberOfPointsToExtract = originalMesh->GetNumberOfPoints();
+
 
 	std::cout << "Before subdivision" << std::endl;
 	std::cout << "    There are " << this->originalMesh->GetNumberOfPoints()
@@ -89,8 +86,7 @@ vtkSmartPointer<vtkSurfaceReconstructionFilter> subdividing::surfReconstruction(
 		<< " triangles." << std::endl;
 
 
-
-	return vtkSmartPointer<vtkSurfaceReconstructionFilter>();
+ 	 return vtkSmartPointer<vtkSurfaceReconstructionFilter>();
 }
 
 void subdividing::Subdivivde(int number)
@@ -105,10 +101,10 @@ void subdividing::Subdivivde(int number)
 			dynamic_cast<vtkLoopSubdivisionFilter *> (subdivisionFilter.GetPointer())->SetNumberOfSubdivisions(this->numberOfSubdivisions);
 			break;
 
-		/*case 1:
+		case 1:
 			subdivisionFilter = vtkSmartPointer<vtkLinearSubdivisionFilter>::New();
 			dynamic_cast<vtkLinearSubdivisionFilter *> (subdivisionFilter.GetPointer())->SetNumberOfSubdivisions(this->numberOfSubdivisions);
-			break;*/
+			break;
 		default:
 			break;
 		}

@@ -27,16 +27,14 @@ public:
 	vector<int> elsetParse(string line, vector<int> &v);
 	void findVertex(list<vector<int>> elset, list<vector<vertex*>> &Elset_v);
 	void checkVertexes(list<vector<vertex*>>Elset_v);
-
+	void createFaces();
 
 	vector<vertex*> verteces;
 	vector<vertex*> temp_verteces;
-	//vector<vertex*> surface_verteces;
+	vector<vertex*> surface_verteces;
 	vector<struct objface> objfaces;
-	//vector<struct objface> inner_objfaces;
+	vector<struct objface> inner_objfaces;
 	list <vector<int>> Elset;
 	list < vector<vertex*>> Elset_v;
-	//vector<int> ToDelete;
-
 };
 

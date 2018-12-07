@@ -7,14 +7,7 @@ dataExport::dataExport(vtkSmartPointer<vtkPolyDataAlgorithm> obj, int count,stri
 	this->count = count;
 	this->polydata = obj->GetOutput();
 	this->v = v;
-
-	/*for (vtkIdType i = 0; i < polydata->GetNumberOfPoints(); i++)
-	{
-		double pointCoordinates[3];
-		polydata->GetPoint(i, pointCoordinates);
-		cout << "Point " << i << " : (" << pointCoordinates[0] << " " << pointCoordinates[1] << " " << pointCoordinates[2] << ")" <<endl;
-	}*/
-
+	
 	string line;
 	ifstream seek1;
 	ofstream  seek2;
@@ -54,15 +47,6 @@ void dataExport::changeVertex(string &line)
 	sscanf_s(line.c_str(), "%f", &id);
 	stringstream newline;
 
-	/*for (auto &elem : this->v) {
-		if (id == elem->id && iterator <= this->count) {
-
-			double pointCoorodinates[3];
-			this->polydata->GetPoint(iterator - 1, pointCoorodinates);
-			newline << '\t' << id << ",\t" << pointCoorodinates[0] << ",\t" << pointCoorodinates[1] << ",\t" << pointCoorodinates[2] << '@';
-			this->iterator++;
-		}
-	}*/
 	if (iterator <= this->count) {
 		int index = 0;
 		for (auto & elem : this->v) {
@@ -78,4 +62,8 @@ void dataExport::changeVertex(string &line)
 			index++;
 		}
 	}
+}
+
+void MarkVertexes() {
+
 }

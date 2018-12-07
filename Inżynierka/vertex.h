@@ -14,6 +14,7 @@ public:
 	bool operator==(const vertex &other);
 	~vertex();
 
+	float distance;
 	int id;
 	short int cout = 0;
 	Vector3f loc;

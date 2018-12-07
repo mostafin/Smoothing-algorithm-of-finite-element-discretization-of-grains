@@ -13,9 +13,6 @@ vizualization::vizualization(vtkSmartPointer<vtkPolyDataAlgorithm> subdivisionFi
 	renderer->SetBackground(.2, .3, .4);
 
 	renderWindow->Render();
-	//this->style = vtkSmartPointer<vtkInteractorStyleTrackballCamera>::New();
-	//renderWindowInteractor->SetInteractorStyle(style);
-	//renderWindow->Render();
 	renderWindow->SetWindowName(vizualization::windowName);
 }
 
@@ -29,6 +26,7 @@ void vizualization::actorSet(vtkSmartPointer<vtkPolyDataMapper> map)
 {
 	this->actor = vtkSmartPointer<vtkActor>::New();
 	this->actor->SetMapper(this->mapper);
+	
 }
 
 void vizualization::renderSet(vtkSmartPointer<vtkRenderWindow> &renderWindow, unsigned iterator)
@@ -39,17 +37,7 @@ void vizualization::renderSet(vtkSmartPointer<vtkRenderWindow> &renderWindow, un
 
 
 	renderWindow->AddRenderer(renderer);
-	renderer->SetViewport(static_cast<double>(iterator) / 2, 0, static_cast<double>(iterator + 1) / 2, 1);
-
-
-	/*renderer->AddActor(this->actor);
-	renderer->ResetCamera();
-	renderer->SetBackground(.2, .3, .4);
-
-	this->style = vtkSmartPointer<vtkInteractorStyleTrackballCamera>::New();
-
-	renderWindow->Render();
-	renderWindow->SetWindowName(vizualization::windowName);*/
+	renderer->SetViewport(static_cast<double>(iterator) / 1, 0, static_cast<double>(iterator + 1) / 1, 1);
 }
 
 
